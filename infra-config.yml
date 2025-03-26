@@ -1,0 +1,34 @@
+---
+- name: Configure Infrastructure
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Update and Upgrade Servers
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Create groups
+      group:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - developers
+        - testers
+        - admins
+        - analysts
+
+    - name: Create users and add them to groups
+      user:
+        name: "{{ item.name }}"
+        groups: "{{ item.group }}"
+        append: yes
+        shell: /bin/bash
+        state: present
+      loop:
+        - { name: "user1", group: "developers" }
+        - { name: "user2", group: "testers" }
+        - { name: "user3", group: "admins" }
+        - { name: "user4", group: "analysts" }
+
